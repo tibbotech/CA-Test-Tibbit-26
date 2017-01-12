@@ -1,0 +1,12 @@
+include "global.tbh"
+
+'====================================================================
+sub callback_stg_error(byref stg_name_or_num as string,index as byte,status as en_stg_status_codes)
+end sub
+
+sub callback_stg_pre_get(byref stg_name_or_num as string,index as byte,byref stg_value as string)
+end sub
+
+sub callback_stg_post_set(byref stg_name_or_num as string, index as byte,byref stg_value as string)
+end sub
+

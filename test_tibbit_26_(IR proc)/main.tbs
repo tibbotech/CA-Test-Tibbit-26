@@ -1,0 +1,109 @@
+'***********************************************************************************************************
+'			Test app for Tibbit #26 (IR command processor)
+'***********************************************************************************************************
+
+'- Place the IR Tibbit into S1 of TPP2 or TPP3 board.
+
+'- Connect IR receiver and emitter (i.e. through Tibbit #21).
+
+'- Set inverted_output, inverted_input, carrier_present, and (if needed) carrier_freq_div.
+
+'- Run this app. When the system is ready, green status LED will light up and stay on.
+
+'- To record an IR signal, press and hold the MD button until the green status LED starts blinking.
+
+'- Without releasing the MD button, press a button on the remote control you are cloning.
+
+'- Release the MD button. If the IR code recording failed, red status LED will blink. If it is successful,
+'green status LED will stop blinking and stay on.
+
+'-To play back the recorded code, "click" (press and release) the MD button.
+
+
+include "global.tbh"
+
+const SPI_CSn = 9
+const SPI_CLK = 8
+const SPI_MOSI = 0
+const SPI_MISO = 16
+const SSI_CHANNEL = 0
+
+const MAX_IR_CMD_LEN=250
+const RECORD_MODE_CONST=3 'in 0.5 sec intervals
+
+'--------------------------------------------------------------------
+dim record_mode as no_yes
+dim record_mode_timer as byte
+dim inverted_output as no_yes
+dim carrier_present as no_yes
+dim inverted_input as no_yes
+dim carrier_freq_div as word
+
+'====================================================================
+sub on_sys_init()
+	dim delay as byte
+	dim s as string
+	dim x as byte
+
+	inverted_output=NO  	'<=============== SET THE CORRECT OUTPUT MODE (ACCORDING TO THE TYPE OF YOUR EMITTER)
+	inverted_input=NO   	'<=============== SET THE CORRECT INPUT MODE (ACCORDING TO THE TYPE OF YOUR RECEIVER)
+	carrier_present=YES 	'<=============== SET THE CARRIER MODE (ACCORDING TO THE TYPE OF YOUR RECEIVER)
+	carrier_freq_div=&h138	'<=============== IF carrier_present=YES, SET THE RIGHT DIVIDER VALUE FOR THE EXPECTED CARRIER FREQUENCY
+
+	record_mode=NO
+	record_mode_timer=0
+	
+	'Start the settings library. The IR code is stored in a setting.
+	if stg_start()<>EN_STG_STATUS_OK then
+		stg_restore_multiple(EN_STG_INIT_MODE_NORMAL)
+	end if
+	
+	select case tbt26_init()
+	case TBT26_INIT_FAILURE:
+		sys.debugprint("Tibbit initialization failure."+CR_LF)	
+	case TBT26_NO_SSI_AVAILABLE:
+		sys.debugprint("SSI channel could not be allocated. Execution halted."+CR_LF)
+		pat.play("R~",PL_PAT_CANINT)
+		while 1
+		wend
+	end select
+
+	pat.play("G~",PL_PAT_CANINT)
+end sub
+
+sub on_sys_timer()
+	if button.pressed=YES then
+		if record_mode_timer<RECORD_MODE_CONST then
+			record_mode_timer=record_mode_timer+1
+			if record_mode_timer=RECORD_MODE_CONST then
+				record_mode=YES
+				pat.play("G-~",PL_PAT_CANINT)
+				tbt26_start_recording(inverted_input,carrier_present,carrier_freq_div)
+			end if
+		end if
+	else
+		record_mode_timer=0
+	end if	
+end sub
+
+sub on_button_released()
+	dim s as string
+	dim data_low,data_high,data_len as byte
+	dim f as byte
+
+	if record_mode=YES then
+		s=tbt26_get_data()
+		if s="" then
+			pat.play("R~",PL_PAT_CANINT)
+			record_mode_timer=0
+			record_mode=YES
+		else
+			stg_set("CMD1",0,s)
+			record_mode=NO
+			record_mode_timer=0
+			pat.play("G~",PL_PAT_CANINT)
+		end if
+	else
+		tbt26_play_back(stg_get("CMD1",0),inverted_output)
+	end if	
+end sub

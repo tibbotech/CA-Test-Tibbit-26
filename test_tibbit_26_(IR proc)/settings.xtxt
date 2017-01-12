@@ -1,0 +1,9 @@
+>>CMD1	E	S	1	0	253	A	^	IR command 1
+>>CMD2	E	S	1	0	253	A	^	IR command 2
+>>CMD3	E	S	1	0	253	A	^	IR command 3
+>>CMD4	E	S	1	0	253	A	^	IR command 4
+#define STG_DESCRIPTOR_FILE "settings.xtxt"
+#define STG_MAX_NUM_SETTINGS 4
+#define STG_RAM_ARRAY_SIZE 0
+#define STG_MAX_SETTING_NAME_LEN 4
+#define STG_MAX_SETTING_VALUE_LEN 253
