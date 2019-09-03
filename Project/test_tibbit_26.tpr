@@ -1,0 +1,113 @@
+[project]
+version = 1
+platform = TPP3W(G2)
+src_lib_ver = 2_01_03
+name = test_tibbit_26
+output = test_tibbit_26.tpc
+debug = on
+defines = /dLCD_TYPE=SOLOMON_SSD1963 /dOBJECT_LCD=LCD_ENABLED /dOBJECT_FD=FD_ENABLED /dOBJECT_KP=KP_ENABLED /dOBJECT_WLN=WLN_ENABLED
+transport = udp_winpcap
+
+[address1]
+platform = TPP2W
+transport = udp_winpcap
+address = 0.36.119.81.87.238
+
+[address2]
+platform = EM2000
+transport = udp_winpcap
+address = 0.36.119.81.102.106
+
+[address3]
+platform = TPP3W(G2)
+transport = udp_winpcap
+address = 0.1.2.3.4.231
+
+[file1]
+path = main.tbs
+type = basic
+format = 
+condition = 
+locked = no
+location = 
+
+[file2]
+path = global.tbh
+type = header
+format = 
+condition = 
+locked = no
+location = 
+
+[file3]
+path = IR_Remote_bitmap.bin
+type = binary
+format = 
+condition = 
+locked = no
+location = project
+
+[file4]
+path = settings.xtxt
+type = xtext
+format = STG_lib_configurator
+condition = 
+locked = no
+location = project
+
+[file5]
+path = settings\trunk\settings.tbh
+type = header
+format = 
+condition = 
+locked = yes
+location = commonlib
+
+[file6]
+path = settings\trunk\settings.tbs
+type = basic
+format = 
+condition = 
+locked = yes
+location = commonlib
+
+[file7]
+path = device.tbs
+type = basic
+format = 
+condition = 
+locked = no
+location = project
+
+[file8]
+path = tbt26.tbs
+type = basic
+format = 
+condition = 
+locked = no
+location = project
+
+[file9]
+path = tbt26.tbh
+type = header
+format = 
+condition = 
+locked = no
+location = project
+
+[file10]
+path = ssi\trunk\ssi.tbh
+type = header
+format = 
+condition = 
+locked = yes
+location = commonlib
+
+[file11]
+path = ssi\trunk\ssi.tbs
+type = basic
+format = 
+condition = 
+locked = yes
+location = commonlib
+
